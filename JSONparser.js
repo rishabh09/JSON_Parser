@@ -1,16 +1,9 @@
 'use strict'
-const readline = require('readline')
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-})
-
-rl.on('line', (input) => {
-  input = input.trim()
-  input = input.replace(/[\n\r\t]+/gi, '')
-  var parsedString = parseEngine(input)
-  console.log(JSON.stringify(parsedString[0]))
-})
+const fs = require('fs')
+var data = fs.readFileSync('example.txt')
+var inpStr = data.toString()
+var parsedString = parseEngine(inpStr)
+console.log(JSON.stringify(parsedString[0]))
 
 function parseEngine (input) {
   if (input.startsWith('"')) {
