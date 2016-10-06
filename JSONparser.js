@@ -25,7 +25,7 @@ function jsonParser (input) {
   if (arrayParser(input)) {
     return arrayParser(input)
   }
-  return ['>>>' + input[0]]
+  return ['Invalid JSON']
 }
 
 //  COMMA PARSER
@@ -139,6 +139,13 @@ function stringParser (input) {
   if (input.startsWith('"')) {
     input = input.slice(1)
     let i = input.indexOf('"')
+    let val = input.substring(0, i)
+    let rem = input.substring(i + 1, input.length)
+    return [val, rem]
+  }
+  if (input.startsWith('\'')) {
+    input = input.slice(1)
+    let i = input.indexOf('\'')
     let val = input.substring(0, i)
     let rem = input.substring(i + 1, input.length)
     return [val, rem]
