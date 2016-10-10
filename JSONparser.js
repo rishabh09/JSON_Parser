@@ -7,23 +7,30 @@ console.log(JSON.stringify(parsedString[0], null, 2))
 
 // JSON PARSER
 function jsonParser (input) {
-  if (nullParser(input)) {
-    return nullParser(input)
+  let parsedString
+  parsedString = nullParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
-  if (boolParser(input)) {
-    return boolParser(input)
+  parsedString = boolParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
-  if (numberParser(input)) {
-    return numberParser(input)
+  parsedString = numberParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
-  if (stringParser(input)) {
-    return stringParser(input)
+  parsedString = stringParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
-  if (objectParser(input)) {
-    return objectParser(input)
+  parsedString = objectParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
-  if (arrayParser(input)) {
-    return arrayParser(input)
+  parsedString = arrayParser(input)
+  if (parsedString !== null) {
+    return parsedString
   }
   return ['Invalid JSON']
 }
@@ -94,7 +101,7 @@ function objectParser (input) {
 
 // SPACE PARSESR
 function spaceParser (input) {
-  while (input !== undefined && (input[0] === ' ' || input[0] === '\n')) {
+  while (input !== undefined && (input[0] === ' ' || input[0] === '\n' || input[0] === '\r')) {
     input = input.slice(1)
   }
   return input
@@ -137,18 +144,30 @@ function numberParser (input) {
 function stringParser (input) {
   input = spaceParser(input)
   if (input.startsWith('"')) {
-    input = input.slice(1)
-    let i = input.indexOf('"')
-    let val = input.substring(0, i)
+    let i = 1
+    while (input[i] !== '"') {
+      if (input[i] === '\\') {
+        i = i + 2
+      } else {
+        i++
+      }
+    }
+    let string = input.substring(1, i)
     let rem = input.substring(i + 1, input.length)
-    return [val, rem]
+    return [string, rem]
   }
   if (input.startsWith('\'')) {
-    input = input.slice(1)
-    let i = input.indexOf('\'')
-    let val = input.substring(0, i)
+    let i = 1
+    while (input[i] !== '\'') {
+      if (input[i] === '\\') {
+        i = i + 2
+      } else {
+        i++
+      }
+    }
     let rem = input.substring(i + 1, input.length)
-    return [val, rem]
+    let string = input.substring(1, i)
+    return [string, rem]
   }
   return null
 }
