@@ -9,27 +9,27 @@ console.log(JSON.stringify(parsedString[0], null, 2))
 function jsonParser (input) {
   let parsedString
   parsedString = nullParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   parsedString = boolParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   parsedString = numberParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   parsedString = stringParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   parsedString = objectParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   parsedString = arrayParser(input)
-  if (parsedString !== null) {
+  if (parsedString) {
     return parsedString
   }
   return ['Invalid JSON']
