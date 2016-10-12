@@ -1,10 +1,11 @@
 const fs = require('fs')
-var data = fs.readFileSync('example.txt')
-var inpStr = data.toString()
-console.log(JSON.stringify(jsonParser(inpStr)[0], null, 2))
+var inpStr = fs.readFileSync('example.txt').toString()
+let output = jsonParser(inpStr)
+output ? console.log(JSON.stringify(output[0], null, 2)) : console.log("Invalid JSON")
 
 function jsonParser (input) {
   let parsedString
+  input = spaceParser(input)[1]
   parsedString = nullParser(input)
   if (parsedString) return parsedString
   parsedString = boolParser(input)
@@ -17,24 +18,19 @@ function jsonParser (input) {
   if (parsedString) return parsedString
   parsedString = arrayParser(input)
   if (parsedString) return parsedString
-  return [null]
+  return null
 }
 
-//  COMMA PARSER
 function commaParser (input) {
-  input = spaceParser(input)[1]
   if (input !== undefined && input[0] === ',') {
     input = input.slice(1)
     input = spaceParser(input)[1]
     if(input.startsWith(']') || input.startsWith(']')) return null
   }
-
   return [null, input]
 }
 
-//  ARRAY PARSER
 function arrayParser (input) {
-  input = spaceParser(input)[1]
   if (input.startsWith('[')) {
     input = input.slice(1)
     input = spaceParser(input)[1]
@@ -43,45 +39,33 @@ function arrayParser (input) {
       var temp = jsonParser(input)
       arr.push(temp[0])
       input = temp[1]
+      input = spaceParser(input)[1]
       let temp1 = commaParser(input)
       if (!temp1) return null
       input = temp1[1]
-
     }
-    if (input !== undefined && input[0] === ']') {
-      input = input.slice(1)
-    }
+    if (input !== undefined && input[0] === ']') input = input.slice(1)
     input = spaceParser(input)[1]
-
     return [arr, input]
   }
   return null
 }
 
-// OBJECT PARSER
 function objectParser (input) {
-  input = spaceParser(input)[1]
-  if (input.startsWith('}')) {
-    input = input.slice(1)
-    input = commaParser(input)[1]
-  }
   if (input.startsWith('{')) {
     let obj = {}
     let key, value
     input = input.slice(1)
     while (input !== undefined && input[0] !== '}') {
+      input = spaceParser(input)[1]
       var temp = stringParser(input)
-      if (temp == null) {
-        break
-      }
+      if (temp == null) break
       key = temp[0]
       temp[1] = spaceParser(temp[1])[1]
-      if (temp[1].startsWith(':')) {
-        temp[1] = temp[1].slice(1)
-        temp[1] = spaceParser(temp[1])[1]
-      }
+      if (temp[1].startsWith(':')) temp[1] = temp[1].slice(1)
       value = jsonParser(temp[1])
       obj[key] = value[0]
+      value[1] = spaceParser(value[1])[1]
       let temp2 = commaParser(value[1])
       if (!temp2) return null
       input = temp2[1]
@@ -92,56 +76,35 @@ function objectParser (input) {
 }
 
 function spaceParser (input) {
-  while (input !== undefined && (input[0] === ' ' || input[0] === '\n' || input[0] === '\r')) {
-    input = input.slice(1)
-  }
+  while (input !== undefined && (input[0] === ' ' || input[0] === '\n' || input[0] === '\r')) input = input.slice(1)
   return [null,input]
 }
 
 function nullParser (input) {
-  input = spaceParser(input)[1]
-  if (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) {
-    return [null, input.slice(4)]
-  }
+  if (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) return [null, input.slice(4)]
   return null
 }
 
 function boolParser (input) {
-  input = spaceParser(input)[1]
-  if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) {
-    return [true, input.slice(4)]
-  }
-  if (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) {
-    return [false, input.slice(5)]
-  }
+  if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) return [true, input.slice(4)]
+  if (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) return [false, input.slice(5)]
   return null
 }
 
 function numberParser (input) {
-  input = spaceParser(input)[1]
   if (input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) {
     var temp = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)[0]
     let val = parseFloat(temp.substring(0, temp.length))
-    let rem = input.substring(temp.length, input.length)
-    return [val, rem]
+    return [val, input.slice(temp.length)]
   }
   return null
 }
 
 function stringParser (input) {
-  input = spaceParser(input)[1]
   if (input.startsWith('"')) {
     let i = 1
-    while (input[i] !== '"') {
-      if (input[i] === '\\') {
-        i = i + 2
-      } else {
-        i++
-      }
-    }
-  let string = input.substring(1, i)
-  let rem = input.substring(i + 1, input.length)
-  return [string, rem]
+    while (input[i] !== '"') (input[i] === '\\') ? i = i + 2 : i++
+  return [input.substring(1, i), input.slice(i + 1)]
   }
   return null
 }
