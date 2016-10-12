@@ -1,33 +1,23 @@
-'use strict'
 const fs = require('fs')
 var data = fs.readFileSync('example.txt')
 var inpStr = data.toString()
-var parsedString = jsonParser(inpStr)
-console.log(JSON.stringify(parsedString[0], null, 2))
+console.log(JSON.stringify(jsonParser(inpStr)[0], null, 2))
 
-// JSON PARSER
 function jsonParser (input) {
   let parsedString
-
   parsedString = nullParser(input)
   if (parsedString) return parsedString
-
   parsedString = boolParser(input)
   if (parsedString) return parsedString
-
   parsedString = numberParser(input)
   if (parsedString) return parsedString
-
   parsedString = stringParser(input)
   if (parsedString) return parsedString
-
   parsedString = objectParser(input)
   if (parsedString) return parsedString
-
   parsedString = arrayParser(input)
   if (parsedString) return parsedString
-
-  return ['Invalid JSON']
+  return [null]
 }
 
 //  COMMA PARSER
@@ -101,7 +91,6 @@ function objectParser (input) {
   return null
 }
 
-// SPACE PARSESR
 function spaceParser (input) {
   while (input !== undefined && (input[0] === ' ' || input[0] === '\n' || input[0] === '\r')) {
     input = input.slice(1)
@@ -109,7 +98,6 @@ function spaceParser (input) {
   return [null,input]
 }
 
-// NULL PARSER
 function nullParser (input) {
   input = spaceParser(input)[1]
   if (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) {
@@ -118,7 +106,6 @@ function nullParser (input) {
   return null
 }
 
-// BOOLEAN PARSER
 function boolParser (input) {
   input = spaceParser(input)[1]
   if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) {
@@ -130,19 +117,17 @@ function boolParser (input) {
   return null
 }
 
-// NUMBER PARSER
 function numberParser (input) {
   input = spaceParser(input)[1]
   if (input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) {
     var temp = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)[0]
-    var i = temp.length
-    let val = parseFloat(temp.substring(0, i))
-    let rem = input.substring(i, input.length)
+    let val = parseFloat(temp.substring(0, temp.length))
+    let rem = input.substring(temp.length, input.length)
     return [val, rem]
   }
   return null
 }
-// STRING PARSER
+
 function stringParser (input) {
   input = spaceParser(input)[1]
   if (input.startsWith('"')) {
@@ -154,22 +139,9 @@ function stringParser (input) {
         i++
       }
     }
-    let string = input.substring(1, i)
-    let rem = input.substring(i + 1, input.length)
-    return [string, rem]
-  }
-  if (input.startsWith('\'')) {
-    let i = 1
-    while (input[i] !== '\'') {
-      if (input[i] === '\\') {
-        i = i + 2
-      } else {
-        i++
-      }
-    }
-    let rem = input.substring(i + 1, input.length)
-    let string = input.substring(1, i)
-    return [string, rem]
+  let string = input.substring(1, i)
+  let rem = input.substring(i + 1, input.length)
+  return [string, rem]
   }
   return null
 }
