@@ -6,6 +6,7 @@ output ? console.log(JSON.stringify(output[0], null, 2)) : console.log("Invalid 
 function jsonParser (parsers) {
   return function(input) {
       for (let i = 0; i < parsers.length; i++){
+      input = spaceParser(input)[1]
       let res = parsers[i](input)
       if (res) return res
     }
