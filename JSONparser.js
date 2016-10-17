@@ -61,12 +61,12 @@ function spaceParser (input) {
 }
 
 function nullParser (input) {
-  return (input.startsWith(null) && !input[4].match(/[a-zA-Z0-9]+/gi)) ? [null, input.slice(4)] : null
+  return (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) ? [null, input.slice(4)] : null
 }
 
 function boolParser (input) {
-  if (input.startsWith(true) && !input[4].match(/[a-zA-Z0-9]+/gi)) return [true, input.slice(4)]
-  return (input.startsWith(false) && !input[5].match(/[a-zA-Z0-9]+/gi)) ? [false, input.slice(5)] : null
+  if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) return [true, input.slice(4)]
+  return (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) ? [false, input.slice(5)] : null
 }
 
 function numberParser (input) {
