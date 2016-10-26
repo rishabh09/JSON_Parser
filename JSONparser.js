@@ -49,18 +49,8 @@ const objectParser = (input) => {
   return (input) ? [obj, input.slice(1)] : [obj, input]
 }
 
-const jsonParser = (parsers) => {
-  return function(input) {
-      for (let i = 0; i < parsers.length; i++){
-      input = spaceParser(input)[1]
-      let res = parsers[i](input)
-      if (res) return res
-    }
-    return null
-  }
-}
-
+const anyOneParserFactory = (...parsers) => (input) => parsers.reduce((accum, parser) => (accum === null) ? parser(input) : accum, null)
+const valueParser = anyOneParserFactory(nullParser, boolParser, numberParser, stringParser, objectParser, arrayParser)
 const inpStr = require('fs').readFileSync('example.txt').toString()
-const anyOneParser = jsonParser([nullParser, boolParser, numberParser, stringParser, objectParser, arrayParser])
 const output = anyOneParser(inpStr)
 output ? console.log(JSON.stringify(output[0], null, 2)) : console.log("Invalid JSON")
