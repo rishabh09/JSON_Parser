@@ -2,16 +2,10 @@ const commaParser = (input) => (input[0] === ',') ? [null, input.slice(1)] : nul
 const spaceParser = (input) => (input.match(/\S/)) ? [null,input.slice(input.indexOf(input.match(/\S/)))] : null
 const nullParser = (input) => (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) ? [null, input.slice(4)] : null
 const numberParser = (input, i) => (i = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) ? [parseFloat(i[0]), input.slice(i[0].length)] : null
+const boolParser = (input) => (input.startsWith(true)) ? [true, input.slice(4)] : (input.startsWith(false) ? [false, input.slice(5)] : null)
 
-const boolParser = (input) => {
-  if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) return [true, input.slice(4)]
-  return (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) ? [false, input.slice(5)] : null
-}
-
-
-const stringParser = (input) => {
+const stringParser = (input, i = 1) => {
   if (!input.startsWith('"')) return null
-  let i = 1
   while (input[i] !== '"') (input[i] === '\\') ? i = i + 2 : i++
   return [input.substring(1, i), input.slice(i + 1)]
 }
