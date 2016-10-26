@@ -7,10 +7,7 @@ let boolParser = (input) => {
   return (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) ? [false, input.slice(5)] : null
 }
 
-let numberParser = (input) => {
-  var num = /^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i
-  return (input.match(num)) ? [parseFloat(input.match(num)[0]), input.slice(input.match(num)[0].length)] : null
-}
+let numberParser = (input, i) => (i = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) ? [parseFloat(i[0]), input.slice(i[0].length)] : null
 
 let stringParser = (input) => {
   if (!input.startsWith('"')) return null
