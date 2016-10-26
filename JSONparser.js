@@ -1,22 +1,22 @@
-let commaParser = (input) => (input[0] === ',') ? [null, input.slice(1)] : null
-let spaceParser = (input) => (input.match(/\S/)) ? [null,input.slice(input.indexOf(input.match(/\S/)))] : null
-let nullParser = (input) => (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) ? [null, input.slice(4)] : null
+const commaParser = (input) => (input[0] === ',') ? [null, input.slice(1)] : null
+const spaceParser = (input) => (input.match(/\S/)) ? [null,input.slice(input.indexOf(input.match(/\S/)))] : null
+const nullParser = (input) => (input.startsWith(null) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) ? [null, input.slice(4)] : null
+const numberParser = (input, i) => (i = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) ? [parseFloat(i[0]), input.slice(i[0].length)] : null
 
-let boolParser = (input) => {
+const boolParser = (input) => {
   if (input.startsWith(true) && (input[4] === undefined || !input[4].match(/[a-zA-Z0-9]+/gi))) return [true, input.slice(4)]
   return (input.startsWith(false) && (input[5] === undefined || !input[5].match(/[a-zA-Z0-9]+/gi))) ? [false, input.slice(5)] : null
 }
 
-let numberParser = (input, i) => (i = input.match(/^[-+]?(\d+(\.\d*)?|\.\d+)([e][+-]?\d+)?/i)) ? [parseFloat(i[0]), input.slice(i[0].length)] : null
 
-let stringParser = (input) => {
+const stringParser = (input) => {
   if (!input.startsWith('"')) return null
   let i = 1
   while (input[i] !== '"') (input[i] === '\\') ? i = i + 2 : i++
   return [input.substring(1, i), input.slice(i + 1)]
 }
 
-let arrayParser = (input) => {
+const arrayParser = (input) => {
   if (!input.startsWith('[')) return null
   input = spaceParser(input.slice(1))[1]
   var arr = []
@@ -33,7 +33,7 @@ let arrayParser = (input) => {
   return (input) ? [arr, input.slice(1)] : [arr,input]
 }
 
-let objectParser = (input) => {
+const objectParser = (input) => {
   if (!input.startsWith('{')) return null
   let obj = {}
   input = spaceParser(input.slice(1))[1]
@@ -55,7 +55,7 @@ let objectParser = (input) => {
   return (input) ? [obj, input.slice(1)] : [obj, input]
 }
 
-let jsonParser = (parsers) => {
+const jsonParser = (parsers) => {
   return function(input) {
       for (let i = 0; i < parsers.length; i++){
       input = spaceParser(input)[1]
@@ -66,7 +66,7 @@ let jsonParser = (parsers) => {
   }
 }
 
-var inpStr = require('fs').readFileSync('example.txt').toString()
-var anyOneParser = jsonParser([nullParser, boolParser, numberParser, stringParser, objectParser, arrayParser])
-let output = anyOneParser(inpStr)
+const inpStr = require('fs').readFileSync('example.txt').toString()
+const anyOneParser = jsonParser([nullParser, boolParser, numberParser, stringParser, objectParser, arrayParser])
+const output = anyOneParser(inpStr)
 output ? console.log(JSON.stringify(output[0], null, 2)) : console.log("Invalid JSON")
